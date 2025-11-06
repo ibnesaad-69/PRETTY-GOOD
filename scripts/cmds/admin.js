@@ -4,11 +4,15 @@ const { writeFileSync } = require("fs-extra");
 module.exports = {
 	config: {
 		name: "admin",
-		version: "1.6",
+		version: "1.5",
 		author: "NTKhang",
 		countDown: 5,
 		role: 2,
-		description: {
+		shortDescription: {
+			vi: "Thêm, xóa, sửa quyền admin",
+			en: "Add, remove, edit admin role"
+		},
+		longDescription: {
 			vi: "Thêm, xóa, sửa quyền admin",
 			en: "Add, remove, edit admin role"
 		},
@@ -16,12 +20,10 @@ module.exports = {
 		guide: {
 			vi: '   {pn} [add | -a] <uid | @tag>: Thêm quyền admin cho người dùng'
 				+ '\n	  {pn} [remove | -r] <uid | @tag>: Xóa quyền admin của người dùng'
-				+ '\n	  {pn} [list | -l] [theme]: Liệt kê danh sách admin với theme đẹp'
-				+ '\n	  Themes: royal, cyber, gaming, space, medieval, neon, ocean, forest, magic, steam',
+				+ '\n	  {pn} [list | -l]: Liệt kê danh sách admin',
 			en: '   {pn} [add | -a] <uid | @tag>: Add admin role for user'
 				+ '\n	  {pn} [remove | -r] <uid | @tag>: Remove admin role of user'
-				+ '\n	  {pn} [list | -l] [theme]: List all admins with beautiful themes'
-				+ '\n	  Themes: royal, cyber, gaming, space, medieval, neon, ocean, forest, magic, steam'
+				+ '\n	  {pn} [list | -l]: List all admins'
 		}
 	},
 
@@ -109,39 +111,7 @@ module.exports = {
 			case "list":
 			case "-l": {
 				const getNames = await Promise.all(config.adminBot.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-				
-				// Get thread participants to check if admin is active in current thread
-				let threadParticipants = [];
-				try {
-					const threadInfo = await api.getThreadInfo(event.threadID);
-					threadParticipants = threadInfo.participantIDs || [];
-				} catch (error) {
-					console.log("Error getting thread info:", error);
-				}
-				
-				const totalAdmins = getNames.length;
-				
-				// Create the specific format requested
-				const adminList = getNames.map(({ uid, name }, index) => {
-					const rank = index + 1;
-					const isActiveInThread = threadParticipants.includes(uid);
-					const statusIcon = isActiveInThread ? "🟢" : "🔴";
-					
-					return `┃ ${rank}. ${statusIcon} ${name}\n┃    └─ 𝐈𝐃: ${uid}`;
-				}).join("\n\n");
-				
-				const result = `┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃     ⭐👑 𝐁𝐎𝐓 𝐀𝐃𝐌𝐈𝐍𝐈𝐒𝐓𝐑𝐀𝐓𝐎𝐑𝐒 👑⭐     
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-${adminList}
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ 📊 𝐓𝐨𝐭𝐚𝐥 𝐀𝐝𝐦𝐢𝐧𝐬: ${totalAdmins}
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ 🟢 = 𝐀𝐜𝐭𝐢𝐯𝐞 𝐢𝐧 𝐭𝐡𝐢𝐬 𝐭𝐡𝐫𝐞𝐚𝐝
-┃ 🔴 = 𝐍𝐨𝐭 𝐢𝐧 𝐭𝐡𝐢𝐬 𝐭𝐡𝐫𝐞𝐚𝐝
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
-				
-				return message.reply(result);
+				return message.reply(getLang("listAdmin", getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")));
 			}
 			default:
 				return message.SyntaxError();
