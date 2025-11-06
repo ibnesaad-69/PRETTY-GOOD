@@ -5,7 +5,7 @@ module.exports = {
      role: 2,
     shortDescription: " ",
     longDescription: "",
-    category: "owner",
+    category: "sophia",
     guide: "{pn}"
   },
 
