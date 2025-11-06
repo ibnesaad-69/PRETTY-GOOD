@@ -3,7 +3,6 @@ const axios = require('axios');
 module.exports = {
   config: {
     name: "image",
-    aliases:["img"],
     author: "ChatGPT",
     version: "4.0",
     shortDescription: "Search for images using Unsplash API",
